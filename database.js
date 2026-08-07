@@ -1,24 +1,27 @@
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./products.db');
 
-function getProductById(id,callback){
-        db.get('SELECT id, name, price FROM products WHERE id = ?', [id], (err,row)=>{
+function getProductById(id){
+    return new Promise((resolve, reject)=>{
+                db.get('SELECT id, name, price FROM products WHERE id = ?', [id], (err,row)=>{
         if(err){
-            return callback(err);
+            return reject(err);
         };
-        return callback(err,row);
+        resolve(row);
     });
+    })
 }
 
 function getProductByName (name, callback){
 
-    db.get('SELECT id, name , price FROM products WHERE name = ?', [name], (err,row)=>{       
+    return new Promise ((resolve, reject)=>{
+        db.get('SELECT id, name , price FROM products WHERE name = ?', [name], (err,row)=>{       
         if(err){
-            return callback(err);
+            return reject(err);
         }
-
-        return callback(null,row);
+        resolve(row);
     });
+    })
     
 
 }

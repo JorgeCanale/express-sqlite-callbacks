@@ -70,12 +70,15 @@ app.post("/product/create", (req, res) => {
 });
 
 app.get("/product/:id", (req, res) => {
-  getProductById(req.params.id, (err, product) => {
-    if (product) {
-      res.status(200).send(product);
-    } else {
-      res.status(404).json({error: "Producto no encontrado"});
-  }
+  getProductById(req.params.id)
+  .then((product)=>{
+    if(!product){
+      return res.status(200).json({erro: "Producto no encontrado"});
+    }
+    return res.status(200).json(product);
+  })
+  .catch((err)=>{
+    return res.status(500).json({err: "Error en el servidor", detail: err.message})
   });
 });
 
