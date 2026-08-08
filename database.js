@@ -61,7 +61,7 @@ function updateProduct(id, porduct){
             if(err){
                 return reject(err);
             }
-            resolve({changes: this.changes});
+            resolve({ id: this.lastID, changes: this.changes });
         })
     })
 
@@ -73,7 +73,7 @@ function patchProduct(query, values){
             if(err){
                 return reject(err);
             }
-            resolve({changes: this.changes})
+            resolve({ id: this.lastID, changes: this.changes })
         })
         
     })
