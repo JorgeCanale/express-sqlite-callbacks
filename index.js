@@ -1,161 +1,20 @@
 const express = require("express");
+const errorHandler = require("./src/middlewares/erro-handler");
+const productRoute = require("./src/routes/product-routes");
+
+
 const app = express();
 const port = 3000;
-const {
-  getProductByName,
-  getProductById,
-  postProduct,
-  deleteProduct,
-  updateProduct,
-  patchProduct,
-} = require("./database");
+
 
 app.use(express.json());
-const allowedProperties = ["name", "price", "id"];
-const necessaryProperties = ["name"];
 
-function propertiesValidation(allowed, toValidate) {
-  let result = { state: "to validate", notAllowed: [] };
+app.use('/product', productRoute);
 
-  toValidate.forEach((e) => {
-    if (!allowed.includes(e)) {
-      result.state = "not allowed";
-      result.notAllowed.push(e);
-    } else if (result.notAllowed.length < 1) {
-      result.state = "allowed";
-    }
-  });
+app.use(errorHandler);
 
-  return result;
-}
 
-function propertiesChecker(properties) {
-  let counter = 0;
-  necessaryProperties.forEach((p) => {
-    if (properties.includes(p)) {
-      counter++;
-    }
-  });
-  if (counter == necessaryProperties.length) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-app.post("/product/create", async(req, res) => {
-
-  if (!propertiesChecker(Object.keys(req.body))) {
-    return res.status(400).json({message:"No se han enviado todos los campos necesarios"});
-  } 
-
-  const validate = propertiesValidation(allowedProperties, Object.keys(req.body));
-
-  if(validate.state !== "allowed"){
-    return res.status(400).json({message: "Se han enviado campos no validos"});
-  }
-      try{
-        const product = await postProduct(req.body)
-
-        if(product.changes == 0){
-          return res.status(404).json({message:"no se han realizado cambios", changes: product.changes});
-        } 
-        return res.status(201).json({message:"Producto creado correctamente", id: product.id ,changes: product.changes});
-
-      }catch(err){
-        return res.status(500).json({message: "Error en el servidor", deatil: err.message});
-      };
-});
-
-app.get("/product/name/:name", async(req,res)=>{
-  try{
-  const product = await getProductByName(req.params.name);
-  if(!product){
-    console.log("entre en el primer if");
-    
-    return res.status(404).json({ message: "Producto no encontrado" });
-  }
-  
-  return res.status(200).json(product);
-}catch(err){  
-    return res.status(500).json({error: "Error en el servidor", detail: err.message});
-  }
-});
-
-app.get("/product/id/:id", async(req, res) => {
-  
-  try{
-    const product = await getProductById(req.params.id);
-
-    if(!product){
-      return res.status(404).json({message: "Producto no encontrado"});
-    }
-    return res.status(200).json(product);
-  }catch(err){
-    return res.status(500).json({err: "Error en el servidor", detail: err.message});
-  };
-});
-
-app.delete("/product/:id",  async (req, res) => {
-  try{
-    const product = await deleteProduct(req.params.id);
-    if(product.changes == 0){
-      return res.status(404).json({message:"El producto no ha sido modificado", changes: product.changes});
-    }
-    return res.status(200).json({message: "Producto eliminado correctamente", changes: product.changes});
-  }catch(err){
-    return res.status(500).json({message:"Error en el servidor", detail: err.message})
-  };
-});
-
-app.put("/product/:id", async (req, res) => {
-  
-    if(!propertiesChecker(Object.keys(req.body))){
-    return res.status(400).json({message: "No se han enviado todos los campos necesarios"});
-    }
-
-    const validation = propertiesValidation(allowedProperties,Object.keys(req.body));
-
-    if(validation.state !== "allowed"){
-    return res.status(400).json({message: "Se han enviado campos no validos"});
-    }
-
-    try{
-    const product = await updateProduct(req.params.id, req.body)
-  
-      if(product.changes == 0){
-        return res.status(404).json({message:"El producto no pudo actualizarse", changes: product.changes});
-      }
-      return res.status(200).json({message:"El producto se ha actualizado correctamente", id: product.id ,changes: product.changes});
-    }catch(err){
-      return res.status(500).json({message:"Error del servidor", detail: err.message});
-    }
-
-});
-
-app.patch("/product/:id", async (req,res)=>{
-  const validate =  propertiesValidation(allowedProperties,Object.keys(req.body));
-
-  if(validate.state !== "allowed"){
-    return res.status(400).json({message: "Se han enviado propiedades invalids", detail: validate.notAllowed})
-  }
-    let query ="UPDATE products SET ";
-    let queryRows = Object.keys(req.body).map(key => {return key += " = ?"}).join(" , ")
-    let queryEnd = "WHERE id = ?";
-
-    try{
-      const product = await patchProduct(query.concat(queryRows, queryEnd), [...Object.values(req.body), req.params.id]);
-    
-      if(product.changes == 0){
-        return res.status(404).json({message:"no se ha podido actualizar el producto", changes: product.changes});
-      }
-      return res.status(200).json({ message:"el producto se ha actualizado correctamente", id: product.id, changes: product.changes });
-    }catch(err){
-      return res.status(500).json({message:"Error del servidor", detail: err.message});
-    };
-  
-})
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Servidor corriendo en el puerto ${port}`);
 });

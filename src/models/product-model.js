@@ -1,5 +1,5 @@
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database('./products.db');
+const db = require('../config/db')
+
 
 function getProductById(id){
     return new Promise ((resolve, reject)=>{
@@ -73,36 +73,14 @@ function patchProduct(query, values){
             if(err){
                 return reject(err);
             }
-            resolve({ id: this.lastID, changes: this.changes })
-        })
+            resolve({ id: this.lastID, changes: this.changes });
+        });
         
-    })
-}
+    });
+};
 
-
-db.serialize(()=>{
-    db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT UNIQUE, price REAL)');
-
-
-    // db.run('DELETE FROM products WHERE name = ?', [name],()=>{
-    //     console.log('product was deleted')
-    // })
-
-    // let newprice = 1300.00;
-
-    // db.run('UPDATE products SET price = ? WHERE name = ?', [newprice, name], ()=>{
-    //     console.log('precio del producto actualziado')
-    // })
-
-
-    //     db.get('SELECT price FROM products WHERE name = ?', [name], (err,row)=>{
-    //     if(err){
-    //         console.log("product not finded",err);
-    //         return
-            
-    //     };
-    //     console.log(row);
-    // });
-});
-
-module.exports = {getProductById, getProductByName,postProduct, deleteProduct, updateProduct, patchProduct} 
+module.exports = {
+    getProductById,
+    getProductByName,postProduct,
+    deleteProduct, updateProduct,
+    patchProduct};
