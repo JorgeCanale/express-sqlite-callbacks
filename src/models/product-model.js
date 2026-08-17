@@ -3,7 +3,7 @@ const db = require('../config/db')
 
 function getProductById(id){
     return new Promise ((resolve, reject)=>{
-        db.get('SELECT id, name, price FROM products WHERE id = ?', [id], (err,row)=>{
+        db.get('SELECT id, name, price FROM products WHERE id = ?', [id], (err, row)=>{
         if(err){
             return reject(err);
         }
@@ -45,7 +45,7 @@ function deleteProduct(id){
         db.run("DELETE FROM products WHERE id = ?", [id],function(err){
     
             if(err){
-                return reject({message: "Erro en el servido", detail: err})
+                return reject({message: "Error en el servido", detail: err})
             }
             resolve({changes: this.changes});
         })
@@ -78,6 +78,8 @@ function patchProduct(query, values){
         
     });
 };
+
+
 
 module.exports = {
     getProductById,
