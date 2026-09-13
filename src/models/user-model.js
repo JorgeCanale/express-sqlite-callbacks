@@ -35,7 +35,7 @@ function getUserPass(email){
             if(err){
                 reject(err);
             };
-            resolve(row.password);
+            resolve(row);
         })
     })
 }

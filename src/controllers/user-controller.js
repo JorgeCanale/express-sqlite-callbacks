@@ -1,7 +1,9 @@
+const { email } = require('zod');
 const {getEmailByUser,getUserByEmail, getUserPass,
     postUser,deleteUser,updateUser,patchUser
 } = require('../models/user-model');
 const bcrypt = require("bcryptjs");
+const crypto = require('node:crypto');
 
 
 async function getByEmail(req, res ){
@@ -97,15 +99,22 @@ async function updatePartialUser(req,res,next){
 
 async function loginUser(req, res, next){
     try {
-        const userPass = await getUserPass(req.body.email);
 
-        const equal = await bcrypt.compare(req.body.password, userPass); 
+        const {email, password} = req.body;
 
-        if(!equal){
-            return res.status(400).json({message:"alguno de los datos ingresados es incorrectos"});
+        const user = await getUserPass(email);
+
+        if(!user){
+            return res.status(404).json({message:"El email no se encuentra registrado"});
+        }
+
+        const isCorrect = await bcrypt.compare(password, user.password);
+
+        if(!isCorrect){
+            return res.status(400).json({message:"Credenciales incorrectas"});
         }
         
-        return res.status(200).json({message: "sesion iniciada correctamente"});
+        return res.status(200).json({message: "Sesion iniciada correctamente"});
 
         
     } catch (err) {
