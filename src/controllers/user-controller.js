@@ -3,9 +3,9 @@ const {getEmailByUser,getUserByEmail,
 } = require('../models/user-model');
 
 
-async function getByEmail(req, res){
+async function getByEmail(req, res ){
     try{      
-        const userData = await getUserByEmail(req.body.email);
+        const userData = await getUserByEmail(req.body.email, check);
 
         if(!userData){
             return res.status(404).json({message: "Usuario no encontrado"});
@@ -13,12 +13,14 @@ async function getByEmail(req, res){
         return res.status(200).json(userData);
     }catch(err){
         return res.status(500).json({err: "Erro en el servidor", detail: err});
-    };
+    }
 };
 
 async function getByUser(req, res){
     try {
+
         const userName = await getEmailByUser(req.body.user);
+
         if(!userName){
             return res.status(404).json({message:"El email no esta asociado a ningun usuario"});
         }
@@ -29,8 +31,14 @@ async function getByUser(req, res){
     };
 };
 
-async function createUser(req,res,next){
+async function createUser(req,res, next){
     try {
+
+        const existUser = await getUserByEmail(req.body.email);
+
+        if(existUser){
+            return res.status(409).json({message:"el email ya se encuentra registrado"});
+        }
         
         let uuid = crypto.randomUUID();
 
@@ -81,6 +89,14 @@ async function updatePartialUser(req,res,next){
         next(err)
     };
 };
+
+async function loginUser(req, res, next){
+    try {
+        
+    } catch (err) {
+        
+    }
+}
 
 module.exports = {
     createUser, getByEmail,

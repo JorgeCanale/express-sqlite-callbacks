@@ -1,11 +1,15 @@
 const db = require('../config/db');
 
-function getUserByEmail(email){
+function getUserByEmail(email,check){
 
     return new Promise((resolve, reject)=>{db.get('SELECT user, email,uid FROM users WHERE email = ?', [email], function(err, row){
         
         if(err){
             reject(err)
+        }
+
+        if(check){
+            resolve(true);
         }
 
         resolve(row)
