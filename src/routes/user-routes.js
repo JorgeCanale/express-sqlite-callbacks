@@ -5,7 +5,7 @@ const validationSchema = require('../middlewares/validate-schema');
 const createUserSchema = require('../schemas/user/user-schema');
 
 router.get("/email",userController.getByEmail);
- 
+
 router.get("/associated-email", userController.getByUser);
 
 router.delete('/delete', userController.deleteUser);
@@ -16,7 +16,7 @@ router.put('/mayor-update', validationSchema(createUserSchema), userController.u
 
 router.patch('/minor-update', validationSchema(createUserSchema), userController.updatePartialUser);
 
-// router.post("/login");
+router.post("/login", userController.loginUser);
 
 // router.post("/logout");
 

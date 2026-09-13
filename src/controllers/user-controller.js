@@ -1,11 +1,12 @@
-const {getEmailByUser,getUserByEmail,
+const {getEmailByUser,getUserByEmail, getUserPass,
     postUser,deleteUser,updateUser,patchUser
 } = require('../models/user-model');
+const bcrypt = require("bcryptjs");
 
 
 async function getByEmail(req, res ){
     try{      
-        const userData = await getUserByEmail(req.body.email, check);
+        const userData = await getUserByEmail(req.body.email);
 
         if(!userData){
             return res.status(404).json({message: "Usuario no encontrado"});
@@ -40,14 +41,18 @@ async function createUser(req,res, next){
             return res.status(409).json({message:"el email ya se encuentra registrado"});
         }
         
-        let uuid = crypto.randomUUID();
+        const { user, password, email} = req.body;
+
+        const uuid = crypto.randomUUID();
 
         console.log(uuid)
-
-        const user = await postUser(req.body, uuid);
-
-        console.log(user);
         
+        const salt = await bcrypt.genSalt(10); 
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const result = await postUser({user, email, password: hashedPassword, uuid});
+
+        console.log(result);
 
         return res.status(201).json({message:"El usuario se creo correctamente"});
     } catch (err) {
@@ -92,14 +97,24 @@ async function updatePartialUser(req,res,next){
 
 async function loginUser(req, res, next){
     try {
+        const userPass = await getUserPass(req.body.email);
+
+        const equal = await bcrypt.compare(req.body.password, userPass); 
+
+        if(!equal){
+            return res.status(400).json({message:"alguno de los datos ingresados es incorrectos"});
+        }
+        
+        return res.status(200).json({message: "sesion iniciada correctamente"});
+
         
     } catch (err) {
-        
+        next(err);
     }
 }
 
 module.exports = {
     createUser, getByEmail,
     getByUser, updateUser,
-    updatePartialUser, deleteUser
+    updatePartialUser, deleteUser, loginUser
 }

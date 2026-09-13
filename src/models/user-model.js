@@ -28,9 +28,21 @@ function getEmailByUser(user){
 });
 };
 
-function postUser(newUser, uid){
+function getUserPass(email){
+    return new Promise((resolve, reject)=>{
+        db.get('SELECT password FROM users WHERE email = ?', [email], function(err, row){
+            
+            if(err){
+                reject(err);
+            };
+            resolve(row.password);
+        })
+    })
+}
 
-    return new Promise((resolve, reject)=>{db.run("INSERT INTO users (user, email, password, uid) VALUES (?, ?, ?, ?)",[newUser.user, newUser.email, newUser.password, uid], function(err){
+function postUser(newUser){
+
+    return new Promise((resolve, reject)=>{db.run("INSERT INTO users (user, email, password, uid) VALUES (?, ?, ?, ?)",[newUser.user, newUser.email, newUser.password, newUser.uuid], function(err){
         if(err){
             reject(err);
         };
@@ -73,7 +85,7 @@ function updateUser(email, user){
 };
 
 module.exports = {
-    getUserByEmail, getEmailByUser,
+    getUserByEmail, getEmailByUser, getUserPass,
     postUser, updateUser,
     deleteUser, patchUser
 };
