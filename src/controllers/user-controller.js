@@ -1,9 +1,10 @@
 const { email } = require('zod');
-const {getEmailByUser,getUserByEmail, getUserPass,
-    postUser,deleteUser,updateUser,patchUser
+const {getEmailByUser,getUserByEmail, getUserWithPass,
+    postUser,deleteUserFromDB,updateUser,patchUser
 } = require('../models/user-model');
 const bcrypt = require("bcryptjs");
 const crypto = require('node:crypto');
+const jwt  = require("jsonwebtoken");
 
 
 async function getByEmail(req, res ){
@@ -49,7 +50,7 @@ async function createUser(req,res, next){
 
         console.log(uuid)
         
-        const salt = await bcrypt.genSalt(10); 
+        const salt = await bcrypt.genSalt(process.env.SALT_ROUND); 
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const result = await postUser({user, email, password: hashedPassword, uuid});
@@ -95,14 +96,41 @@ async function updatePartialUser(req,res,next){
     } catch (err) {
         next(err)
     };
+
 };
+
+
+
+async function deleteUser(req,res,next){
+
+    try{
+        const email = req.user.email;
+
+    if(!email){
+        return res.status(400).json({message: "no se ha proporcionado un email"});
+    };
+
+    const resolution = await deleteUserFromDB(email);
+
+    if(resolution.changes < 1){
+       return  res.status(500).json({message:"no se ha podido eliminar el usuario"});
+    }
+
+    return res.status(200).json({message:"el usuario ha sido eliminado correctamente", changes: resolution.changes});
+
+}catch(err){
+    next(err)
+}
+
+
+}
 
 async function loginUser(req, res, next){
     try {
 
         const {email, password} = req.body;
 
-        const user = await getUserPass(email);
+        const user = await getUserWithPass(email);
 
         if(!user){
             return res.status(404).json({message:"El email no se encuentra registrado"});
@@ -112,9 +140,23 @@ async function loginUser(req, res, next){
 
         if(!isCorrect){
             return res.status(400).json({message:"Credenciales incorrectas"});
-        }
+        };
+
+
+        const payload = {
+            uuid: user.uid,
+            email: user.email
+        };
+
+        const token = jwt.sign(
+            payload,
+            'clave_secreta_super_segura',
+            {expiresIn: '2h'}
+        );
+
+
         
-        return res.status(200).json({message: "Sesion iniciada correctamente"});
+        return res.status(200).json({message: "Sesion iniciada correctamente", token});
 
         
     } catch (err) {
@@ -124,6 +166,6 @@ async function loginUser(req, res, next){
 
 module.exports = {
     createUser, getByEmail,
-    getByUser, updateUser,
-    updatePartialUser, deleteUser, loginUser
+    getByUser, updateFullUser,
+    updatePartialUser, loginUser, deleteUser
 }

@@ -4,6 +4,9 @@ const productController = require('../controllers/product-controller');
 const validateSchema = require('../middlewares/validate-schema');
 const {createProductSchema, updateProductSchema} = require('../schemas/product/product-schema');
 
+
+
+
 router.get("/name/:name", productController.getByName );
  
 router.get("/id/:id", productController.getById);

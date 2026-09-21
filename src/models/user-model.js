@@ -2,7 +2,7 @@ const db = require('../config/db');
 
 function getUserByEmail(email,check){
 
-    return new Promise((resolve, reject)=>{db.get('SELECT user, email,uid FROM users WHERE email = ?', [email], function(err, row){
+    return new Promise((resolve, reject)=>{db.get('SELECT user, email, uid FROM users WHERE email = ?', [email], function(err, row){
         
         if(err){
             reject(err)
@@ -28,9 +28,9 @@ function getEmailByUser(user){
 });
 };
 
-function getUserPass(email){
+function getUserWithPass(email){
     return new Promise((resolve, reject)=>{
-        db.get('SELECT password FROM users WHERE email = ?', [email], function(err, row){
+        db.get('SELECT user, email, password, uid FROM users WHERE email = ?', [email], function(err, row){
             
             if(err){
                 reject(err);
@@ -50,7 +50,7 @@ function postUser(newUser){
     });})
 };
 
-function deleteUser(email){
+function deleteUserFromDB(email){
     return new Promise((resolve, reject)=>{db.run('DELETE FROM users WHERE email = ?',[email], function(err){
         if(err){
             reject({message: "Error en el servidor", detail: err});
@@ -85,7 +85,7 @@ function updateUser(email, user){
 };
 
 module.exports = {
-    getUserByEmail, getEmailByUser, getUserPass,
+    getUserByEmail, getEmailByUser, getUserWithPass,
     postUser, updateUser,
-    deleteUser, patchUser
+    deleteUserFromDB, patchUser
 };
