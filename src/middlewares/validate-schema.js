@@ -7,7 +7,7 @@ function validateSchema(schema){
                 field: issue.path.join('.'),
                 errors: issue.message
             }));
-
+ 
             return res.status(400).json({
                 message: "Error de validación en los datos enviados",
                 errors: formattedErrors

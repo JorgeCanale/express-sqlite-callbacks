@@ -6,42 +6,12 @@ const {
   updateProduct,
   patchProduct,} = require('../models/product-model');
 
-  const productModel = require('../models/product-model');
+
 
 
 const allowedProperties = ["name", "price", "id"];
 const necessaryProperties = ["name"];
 
-
-function propertiesValidation(allowed, toValidate) {
-  let result = { state: "to validate", notAllowed: [] };
-
-   
-  toValidate.forEach((e) => {
-    if (!allowed.includes(e)) {
-      result.state = "not allowed";
-      result.notAllowed.push(e);
-    } else if (result.notAllowed.length < 1) {
-      result.state = "allowed";
-    }
-  });
-
-  return result;
-};
-
-function propertiesChecker(properties) {
-  let counter = 0;
-  necessaryProperties.forEach((p) => {
-    if (properties.includes(p)) {
-      counter++;
-    }
-  });
-  if (counter == necessaryProperties.length) {
-    return true;
-  } else {
-    return false;
-  }
-};
 
 
 async function getById(req, res){
@@ -77,7 +47,7 @@ async function getByName(req,res){
 async function createProduct(req, res, next){
 
       try{
-        const product = await productModel.postProduct(req.body);
+        const product = await postProduct(req.body);
         
         return res.status(201).json({message:"Producto creado correctamente", id: product.id ,changes: product.changes});
       }catch(err){
@@ -100,7 +70,7 @@ async function deleteProductById(req, res){
 async function updateFullProduct(req, res, next){
 
     try{
-    const product = await productModel.updateProduct(req.params.id, req.body)
+    const product = await updateProduct(req.params.id, req.body)
   
       if(product.changes == 0){
         return res.status(404).json({message:"El producto no pudo actualizarse", changes: product.changes});
@@ -120,12 +90,12 @@ async function updatePartialProduct(req, res, next){
       let queryRows = Object.keys(req.body).map(key => {return key += " = ?"}).join(" , ")
       let queryEnd = "WHERE id = ?";
 
-      const product = await productModel.patchProduct(query.concat(queryRows, queryEnd), [...Object.values(req.body), req.params.id]);
+      const product = await patchProduct(query.concat(queryRows, queryEnd), [...Object.values(req.body), req.params.id]);
     
       if(product.changes == 0){
-        return res.status(404).json({message:"no se ha podido actualizar el producto", changes: product.changes});
+        return res.status(404).json({message:"No se ha podido actualizar el producto", changes: product.changes});
       }
-      return res.status(200).json({ message:"el producto se ha actualizado correctamente", id: product.id, changes: product.changes });
+      return res.status(200).json({ message:"El producto se ha actualizado correctamente", id: product.id, changes: product.changes });
     }catch(err){
       next(err);
     };
@@ -133,8 +103,6 @@ async function updatePartialProduct(req, res, next){
 }
 
 module.exports = {
-    propertiesChecker,
-    propertiesValidation,
     createProduct,
     getById,
     getByName,
