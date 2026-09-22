@@ -1,4 +1,3 @@
-const { email } = require('zod');
 const {getEmailByUser,getUserByEmail, getUserWithPass,
     postUser,deleteUserFromDB,updateUser,patchUser
 } = require('../models/user-model');
@@ -145,7 +144,8 @@ async function loginUser(req, res, next){
 
         const payload = {
             uuid: user.uid,
-            email: user.email
+            email: user.email,
+            roel: user.role || 'client'
         };
 
         const clave = process.env.JWT_SECRET

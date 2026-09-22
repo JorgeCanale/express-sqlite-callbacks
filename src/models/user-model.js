@@ -42,7 +42,10 @@ function getUserWithPass(email){
 
 function postUser(newUser){
 
-    return new Promise((resolve, reject)=>{db.run("INSERT INTO users (user, email, password, uid) VALUES (?, ?, ?, ?)",[newUser.user, newUser.email, newUser.password, newUser.uuid], function(err){
+    return new Promise((resolve, reject)=>{db.run(
+        "INSERT INTO users (id INTEGER PRIMARY KEY  AUTOINCREMENT user TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, uid TEXT UNIQUE NOT NULL, role TEXT DEFAULT 'client' CHECK(role IN ('admin', 'client')) ) VALUES (?, ?, ?, ?)",
+        [newUser.user, newUser.email, newUser.password, newUser.uuid, newUser.role], 
+        function(err){
         if(err){
             reject(err);
         };
