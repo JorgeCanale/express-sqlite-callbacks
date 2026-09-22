@@ -148,9 +148,11 @@ async function loginUser(req, res, next){
             email: user.email
         };
 
+        const clave = process.env.JWT_SECRET
+
         const token = jwt.sign(
             payload,
-            'clave_secreta_super_segura',
+            clave,
             {expiresIn: '2h'}
         );
 
