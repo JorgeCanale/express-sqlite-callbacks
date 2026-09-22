@@ -14,9 +14,9 @@ router.delete('/delete', authMiddleware ,userController.deleteUser);
 
 router.post('/register', validationSchema(createUserSchema), userController.createUser);
 
-router.put('/mayor-update', validationSchema(createUserSchema), userController.updateFullUser);
+router.put('/mayor-update', authMiddleware ,validationSchema(createUserSchema), userController.updateFullUser);
 
-router.patch('/minor-update', validationSchema(createUserSchema), userController.updatePartialUser);
+router.patch('/minor-update', authMiddleware, validationSchema(createUserSchema), userController.updatePartialUser);
 
 router.post("/login", userController.loginUser); 
 
