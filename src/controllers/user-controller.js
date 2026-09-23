@@ -1,4 +1,3 @@
-const { email } = require('zod');
 const {getEmailByUser,getUserByEmail, getUserWithPass,
     postUser,deleteUserFromDB,updateUser,patchUser
 } = require('../models/user-model');
@@ -47,8 +46,6 @@ async function createUser(req,res, next){
         const { user, password, email} = req.body;
 
         const uuid = crypto.randomUUID();
-
-        console.log(uuid)
         
         const salt = await bcrypt.genSalt(process.env.SALT_ROUND); 
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -145,7 +142,8 @@ async function loginUser(req, res, next){
 
         const payload = {
             uuid: user.uid,
-            email: user.email
+            email: user.email,
+            roel: user.role || 'client'
         };
 
         const clave = process.env.JWT_SECRET

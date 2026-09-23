@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/product-controller');
 const validateSchema = require('../middlewares/validate-schema');
 const {createProductSchema, updateProductSchema} = require('../schemas/product/product-schema');
+const authMiddleware = require('../middlewares/auth-middleware');
 
 
 
@@ -11,13 +12,13 @@ router.get("/name/:name", productController.getByName );
  
 router.get("/id/:id", productController.getById);
 
-router.delete("/:id", productController.deleteProductById);
+router.delete("/:id", authMiddleware, productController.deleteProductById);
 
-router.post("/create", validateSchema(createProductSchema) ,productController.createProduct);
+router.post("/create", authMiddleware, validateSchema(createProductSchema) ,productController.createProduct);
 
-router.put("/:id", validateSchema(updateProductSchema),productController.updateFullProduct);
+router.put("/:id", authMiddleware, validateSchema(updateProductSchema),productController.updateFullProduct);
 
-router.patch("/:id", validateSchema(updateProductSchema),productController.updatePartialProduct);
+router.patch("/:id",authMiddleware, validateSchema(updateProductSchema),productController.updatePartialProduct);
 
 
 module.exports = router;
