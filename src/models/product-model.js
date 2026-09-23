@@ -34,7 +34,7 @@ function getProductByName(name) {
 function postProduct(newProduct) {
   return new Promise((resolve, reject) => {
     db.run(
-      "INSERT INTO products (name TEXT NOT NULL, price INTEGER, uuid TEXT UNIQUE NOT NULL, user_uuid TEXT NOT NULL) VALUES (?,?,?,?)",
+      "INSERT INTO products (name, price, uuid, user_uuid) VALUES (?,?,?,?)",
       [
         newProduct.name,
         newProduct.price,

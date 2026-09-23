@@ -43,7 +43,8 @@ async function createProduct(req, res, next){
       try{
         const {name, price} = req.body;
         const randomUuid = crypto.randomUUID();
-        const product = await postProduct({name,price, uuid: randomUuid ,user_uuid:req.user.uuid,});
+        
+        const product = await postProduct({name, price, uuid: randomUuid ,user_uuid: req.user.uuid,});
         return res.status(201).json({message:"Producto creado correctamente", id: product.id ,changes: product.changes});
       }catch(err){
         next(err)
