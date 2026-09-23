@@ -5,13 +5,7 @@ const {
   deleteProduct,
   updateProduct,
   patchProduct,} = require('../models/product-model');
-
-
-
-
-const allowedProperties = ["name", "price", "id"];
-const necessaryProperties = ["name"];
-
+const crypto = require("node:crypto");
 
 
 async function getById(req, res){
@@ -47,8 +41,9 @@ async function getByName(req,res){
 async function createProduct(req, res, next){
 
       try{
-        const product = await postProduct(req.body);
-        
+        const {name, price} = req.body;
+        const randomUuid = crypto.randomUUID();
+        const product = await postProduct({name,price, uuid: randomUuid ,user_uuid:req.user.uuid,});
         return res.status(201).json({message:"Producto creado correctamente", id: product.id ,changes: product.changes});
       }catch(err){
         next(err)

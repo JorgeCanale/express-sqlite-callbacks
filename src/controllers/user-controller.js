@@ -46,8 +46,6 @@ async function createUser(req,res, next){
         const { user, password, email} = req.body;
 
         const uuid = crypto.randomUUID();
-
-        console.log(uuid)
         
         const salt = await bcrypt.genSalt(process.env.SALT_ROUND); 
         const hashedPassword = await bcrypt.hash(password, salt);

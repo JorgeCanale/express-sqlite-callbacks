@@ -1,5 +1,6 @@
 const db = require("../config/db");
 
+
 function getProductById(id) {
   return new Promise((resolve, reject) => {
     db.get(
@@ -33,7 +34,7 @@ function getProductByName(name) {
 function postProduct(newProduct) {
   return new Promise((resolve, reject) => {
     db.run(
-      "INSERT INTO products (name TEXT NOT NULL, price INTEGER, uuid TEXT UNIQUE NOT NULL, user_uuid TEXT) VALUES (?,?,?,?)",
+      "INSERT INTO products (name TEXT NOT NULL, price INTEGER, uuid TEXT UNIQUE NOT NULL, user_uuid TEXT NOT NULL) VALUES (?,?,?,?)",
       [
         newProduct.name,
         newProduct.price,
