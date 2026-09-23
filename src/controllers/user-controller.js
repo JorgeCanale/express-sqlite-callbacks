@@ -50,7 +50,7 @@ async function createUser(req,res, next){
         const salt = await bcrypt.genSalt(process.env.SALT_ROUND); 
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const result = await postUser({user, email, password: hashedPassword, uuid});
+        const result = await postUser({user, email, password: hashedPassword, uuid: uuid});
 
         console.log(result);
 
@@ -141,7 +141,7 @@ async function loginUser(req, res, next){
 
 
         const payload = {
-            uuid: user.uid,
+            uuid: user.uuid,
             email: user.email,
             roel: user.role || 'client'
         };

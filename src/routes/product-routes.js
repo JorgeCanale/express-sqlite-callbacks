@@ -12,7 +12,7 @@ router.get("/name/:name", productController.getByName );
  
 router.get("/id/:id", productController.getById);
 
-router.delete("/:id", authMiddleware, productController.deleteProductById);
+router.delete("id/:id", authMiddleware, productController.deleteProductById);
 
 router.post("/create", authMiddleware, validateSchema(createProductSchema) ,productController.createProduct);
 
